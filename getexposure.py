@@ -1,3 +1,6 @@
+#NOT COMPLETED
+
+
 import ieugwaspy as igd
 import pandas as pd
 
