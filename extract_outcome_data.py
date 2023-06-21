@@ -1,28 +1,27 @@
 import ieugwaspy as igd
 import pandas as pd
 import ieugwaspy.backwards as backwards
+import ieugwaspy.query as query
 import numpy as np
 import scipy.stats as stats
 from read_outcome_data import *
 from extract_instruments import *
 
-
 def extract_outcome_data(snps, outcomes, proxies=True, rsq=0.8, align_alleles=1, palindromes=1, maf_threshold=0.3, access_token=None, splitsize=10000, proxy_splitsize=500):
-    outcomes = backwards.legacy_ids(list(set(outcomes)))
-
+    outcomes = list(set(outcomes))
     snps = list(set(snps))
     firstpass = extract_outcome_data_internal(snps, outcomes, proxies=False, access_token=access_token, splitsize=splitsize)
 
     if proxies:
-        for outcome in outcomes:
+        for i in range(len(outcomes)):
             if firstpass is None:
                 missedsnps = snps
             else:
-                missedsnps = [snp for snp in snps if snp not in firstpass[firstpass['id.outcome'] == outcome]['SNP']]
-
+                missedsnps = [snp for snp in snps if snp not in firstpass[firstpass['id.outcome'] == outcomes[i]]['SNP']]
+            #print (missedsnps)
             if len(missedsnps) > 0:
-                print(f"Finding proxies for {len(missedsnps)} SNPs in outcome {outcome}")
-                temp = extract_outcome_data_internal(missedsnps, outcome, proxies=True, rsq=rsq, align_alleles=align_alleles, palindromes=palindromes, maf_threshold=maf_threshold, access_token=access_token, splitsize=proxy_splitsize)
+                print(f"Finding proxies for {len(missedsnps)} SNPs in outcome {outcomes[i]}")
+                temp = extract_outcome_data_internal(missedsnps, [outcomes[i]], proxies=True, rsq=rsq, align_alleles=align_alleles, palindromes=palindromes, maf_threshold=maf_threshold, access_token=access_token, splitsize=proxy_splitsize)
                 if temp is not None:
                     firstpass = pd.concat([firstpass, temp], ignore_index=True)
 
@@ -32,7 +31,7 @@ def extract_outcome_data(snps, outcomes, proxies=True, rsq=0.8, align_alleles=1,
 def extract_outcome_data_internal(snps, outcomes, proxies=True, rsq=0.8, align_alleles=1, palindromes=1, maf_threshold=0.3, access_token=None, splitsize=10000):
     snps = list(set(snps))
     print(f"Extracting data for {len(snps)} SNP(s) from {len(set(outcomes))} GWAS(s)")
-    outcomes = list(set(outcomes))
+    outcomes = list(set(outcomes))  
 
     if not proxies:
         proxies = 0
@@ -42,10 +41,10 @@ def extract_outcome_data_internal(snps, outcomes, proxies=True, rsq=0.8, align_a
         raise ValueError("'proxies' argument should be True or False")
 
     if (len(snps) < splitsize and len(outcomes) < splitsize) or (len(outcomes) < splitsize and len(snps) < splitsize):
-        d = igd.associations(variantlist=snps, id=outcomes, proxies=proxies, r2=rsq, align_alleles=align_alleles, palindromes=palindromes, maf_threshold=maf_threshold, access_token=access_token)
-        if not isinstance(d, pd.DataFrame):
-            d = pd.DataFrame()
-
+        d = query.associations(variantlist=snps, id=outcomes, proxies=proxies, r2=rsq, align_alleles=align_alleles, palindromes=palindromes, maf_threshold=maf_threshold, access_token=access_token)
+        d = pd.DataFrame(d)
+        #print (d)
+        
     elif len(snps) > len(outcomes):
         n = len(snps)
         splits = pd.DataFrame({"snps": snps, "chunk_id": np.repeat(range(1, int(np.ceil(n/splitsize)) + 1), repeats=splitsize)[:n]})
@@ -53,7 +52,7 @@ def extract_outcome_data_internal(snps, outcomes, proxies=True, rsq=0.8, align_a
         for i in range(len(outcomes)):
             print(f"{i+1} of {len(outcomes)} outcomes")
             temp = splits.groupby("chunk_id").apply(lambda x: x.assign(chunk_id_first=x["chunk_id"].iloc[0]))
-            out = igd.associations(variants=temp["snps"].tolist(), id=outcomes[i], proxies=proxies, r2=rsq, align_alleles=align_alleles, palindromes=palindromes, maf_threshold=maf_threshold, access_token=access_token)
+            out = query.associations(variants=temp["snps"].tolist(), id=outcomes[i], proxies=proxies, r2=rsq, align_alleles=align_alleles, palindromes=palindromes, maf_threshold=maf_threshold, access_token=access_token)
             if not isinstance(out, pd.DataFrame):
                 out = pd.DataFrame()
             d.append(out)
@@ -67,7 +66,7 @@ def extract_outcome_data_internal(snps, outcomes, proxies=True, rsq=0.8, align_a
         for i in range(len(snps)):
             print(f"{i+1} of {len(snps)} snps")
             temp = splits.groupby("chunk_id").apply(lambda x: x.assign(chunk_id_first=x["chunk_id"].iloc[0]))
-            out = igd.associations(variants=snps[i], id=temp["outcomes"].tolist(), proxies=proxies, r2=rsq, align_alleles=align_alleles, palindromes=palindromes, maf_threshold=maf_threshold, access_token=access_token)
+            out = query.associations(variants=snps[i], id=temp["outcomes"].tolist(), proxies=proxies, r2=rsq, align_alleles=align_alleles, palindromes=palindromes, maf_threshold=maf_threshold, access_token=access_token)
             if not isinstance(out, pd.DataFrame):
                 out = pd.DataFrame()
             d.append(out)
@@ -158,6 +157,7 @@ def format_d(d):
 
 
 d = extract_instruments("ieu-a-2")
-snps = d['rsid']
-outcomes = "ieu-a-7"
-outcome_dat = extract_outcome_data(snps=snps, outcomes=outcomes)
+#snps = d['rsid']
+#outcomes = "ieu-a-7"
+outcome_dat = extract_outcome_data(snps=d["rsid"], outcomes=["ieu-a-7"])
+print (outcome_dat)
