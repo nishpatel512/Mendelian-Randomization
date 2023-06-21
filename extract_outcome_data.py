@@ -134,7 +134,10 @@ def format_d(d):
         return d
 
     d["originalname.outcome"] = d["outcome"]
-    d["outcome.deprecated"] = d["outcome"] + " || " + d["consortium.outcome"] + " || " + d["year.outcome"]
+    if "consortium.outcome" in d.columns and "year.outcome" in d.columns:
+        d["outcome.deprecated"] = d["outcome"] + " || " + d["consortium.outcome"] + " || " + d["year.outcome"]
+    else:
+        d["outcome.deprecated"] = d["outcome"]
     d["outcome"] = d["outcome"] + " || id:" + d["id.outcome"]
 
     rem = pd.isna(d["beta.outcome"]) & pd.isna(d["pval.outcome"])
@@ -156,8 +159,10 @@ def format_d(d):
     return d
 
 
+
 d = extract_instruments("ieu-a-2")
+#print(d)
 #snps = d['rsid']
 #outcomes = "ieu-a-7"
-outcome_dat = extract_outcome_data(snps=d["rsid"], outcomes=["ieu-a-7"])
+outcome_dat = extract_outcome_data(snps=d["SNP"], outcomes=["ieu-a-7"])
 print (outcome_dat)
