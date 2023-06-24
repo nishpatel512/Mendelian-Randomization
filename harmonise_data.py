@@ -57,7 +57,7 @@ def harmonise_data(exposure_dat, outcome_dat, action=2):
     
     if "samplesize.outcome" not in fix_tab.columns:
         fix_tab["samplesize.outcome"] = np.nan
-    
+    fix_tab = fix_tab.drop(['log'],axis=1)
     return fix_tab
 
 
@@ -598,10 +598,6 @@ def check_required_columns(dat, column_type="exposure"):
     if missing_columns:
         raise ValueError(f"The following required columns are missing from {column_type}: {', '.join(missing_columns)}")
     return None
-
-
-
-
 
 e = extract_instruments("ieu-a-2")
 o = extract_outcome_data(snps=e["SNP"], outcomes=["ieu-a-7"])
