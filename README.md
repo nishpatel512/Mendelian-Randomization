@@ -15,6 +15,20 @@ We are making use of python package called MRPackage which has all the functiona
   extract_instruments(list_ids)
   '''
     INPUT: List of instrument ids from the IEU_GWAS public database. Subset of available_outcomes() method output. 
-    OUTPUT: Formatted dataframe of extracted instruments with ids from list_ids. 
+    OUTPUT: Formatted dataframe of extracted instruments with ids from list_ids, to find exposure data.
+  '''
+  ```
+  ```python
+  extract_outcome_data()
+  '''
+    INPUT: 2 formatted dataframes from extract_instruments(from IEU_GWAS public database) and read_outcome_data(from local directory).
+    OUTPUT: Formatted dataframe which contains outcome data
+  '''
+  ```
+   ```python
+  format_data()
+  '''
+    INPUT: 2 formatted dataframes from extract_instruments(from IEU_GWAS public database) and read_outcome_data(from local directory).
+    OUTPUT: Formatted dataframe which contains outcome data
   '''
   ```
