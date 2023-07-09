@@ -3,6 +3,11 @@ import numpy as np
 from extract_instruments import *
 from extract_outcome_data import *
 def harmonise_data(exposure_dat, outcome_dat, action=2):
+    '''
+    Input: Takes formated input data of Exposure and Outcome data
+    Output: Data frame with harmonised effects and alleles
+    Description: In order to perform MR the effect of a SNP on an outcome and exposure must be harmonised to be relative to the same allele.
+    '''
     if action not in range(1, 4):
         raise ValueError("Action argument must be between 1 and 3 (inclusive).")
 
@@ -62,22 +67,67 @@ def harmonise_data(exposure_dat, outcome_dat, action=2):
 
 
 def harmonise_cleanup_variables(res_tab):
+    """
+    Cleans up variables in the given DataFrame `res_tab` to ensure consistency and proper data types.
+
+    Steps:
+    1. Convert certain columns to numeric data type:
+       - 'beta.exposure': Converts the column to numeric values.
+       - 'beta.outcome': Converts the column to numeric values.
+       - 'eaf.exposure': Converts the column to numeric values.
+
+    2. Handling missing values in the 'eaf.outcome' column:
+       - Replaces occurrences of "NR" and "NR " with NaN (missing value).
+       - This ensures consistent handling of missing allele frequencies.
+
+    3. Convert 'eaf.outcome' column to numeric data type:
+       - Converts the column to numeric values.
+
+    4. Standardize allele columns:
+       - Converts the following allele columns to uppercase:
+         - 'effect_allele.exposure'
+         - 'other_allele.exposure'
+         - 'effect_allele.outcome'
+       - This ensures uniform capitalization for allele symbols.
+
+    5. Handling missing values in the 'other_allele.outcome' column:
+       - Replaces empty strings with NaN (missing value).
+       - This helps handle missing values consistently.
+
+    Parameters:
+    - res_tab: DataFrame containing the variables to be cleaned up.
+
+    Returns:
+    - The cleaned-up DataFrame `res_tab` with consistent data types and standardized variables.
+    """
+    # Convert certain columns to numeric data type
     res_tab["beta.exposure"] = pd.to_numeric(res_tab["beta.exposure"])
     res_tab["beta.outcome"] = pd.to_numeric(res_tab["beta.outcome"])
     res_tab["eaf.exposure"] = pd.to_numeric(res_tab["eaf.exposure"])
+    # Replace "NR" values in the "eaf.outcome" column with NaN
     res_tab.loc[res_tab["eaf.outcome"].isin(["NR", "NR "]), "eaf.outcome"] = np.nan
+    # Convert "eaf.outcome" column to numeric data type
     res_tab["eaf.outcome"] = pd.to_numeric(res_tab["eaf.outcome"])
-
+    # Convert allele columns to uppercase
     res_tab["effect_allele.exposure"] = res_tab["effect_allele.exposure"].str.upper()
     res_tab["other_allele.exposure"] = res_tab["other_allele.exposure"].str.upper()
     res_tab["effect_allele.outcome"] = res_tab["effect_allele.outcome"].str.upper()
     res_tab["other_allele.outcome"] = res_tab["other_allele.outcome"].str.upper()
+    # Replace empty strings in the "other_allele.outcome" column with NaN
     res_tab.loc[res_tab["other_allele.outcome"] == "", "other_allele.outcome"] = np.nan
 
     return res_tab
 
 
 def harmonise_make_snp_effects_positive(res_tab):
+    '''
+    Modifies the SNP effects in the given DataFrame `res_tab` to ensure they are positive.
+    Parameters:
+    - res_tab: DataFrame containing the SNP effects and related variables to be modified.
+
+    Returns:
+    - The modified DataFrame `res_tab` with SNP effects adjusted to be positive and corresponding allele swaps.
+    '''
     pos_change = res_tab["beta.exposure"] < 0
     res_tab.loc[pos_change, "eaf.exposure"] = 1 - res_tab.loc[pos_change, "eaf.exposure"]
     res_tab.loc[pos_change, "beta.exposure"] *= -1
@@ -89,10 +139,28 @@ def harmonise_make_snp_effects_positive(res_tab):
 
     return res_tab
 def check_palindromic(A1, A2):
+    '''
+    Checks if the given alleles form a palindromic pair.
+    Parameters:
+    - A1: First allele
+    - A2: Second allele
+
+    Returns:
+    - Boolean value indicating whether the alleles form a palindromic pair (True) or not (False).
+    '''
     return ((A1 == "T") & (A2 == "A")) | ((A1 == "A") & (A2 == "T")) | ((A1 == "G") & (A2 == "C")) | ((A1 == "C") & (A2 == "G"))
 
 
 def flip_alleles(x):
+    '''
+    Flips the alleles in a given input.
+    Parameters:
+    - x: A value or Pandas Series containing the alleles to be flipped.
+
+    Returns:
+    - If `x` is a single value, the function returns the flipped alleles as a string.
+    - If `x` is a Pandas Series, the function returns a new Pandas Series with flipped alleles.
+    '''
     if isinstance(x, pd.Series):
         return x.apply(flip_alleles)
     else:
@@ -101,6 +169,22 @@ def flip_alleles(x):
         return ''.join(flipped_alleles.get(base, base) for base in x)
 
 def recode_indels_22(A1, A2, B1, B2):
+    '''
+    Recodes indels in a genetic dataset.
+    This function recodes indels (insertions and deletions) in a genetic dataset by comparing the lengths of alleles and
+    their corresponding indel codes. It updates the values of `B1` and `B2` based on specific conditions related to the
+    lengths of `A1` and `A2` alleles and the indel codes.
+
+    Parameters:
+    - A1: A list of alleles representing the original values of the first allele.
+    - A2: A list of alleles representing the original values of the second allele.
+    - B1: A list of alleles representing the current values of the first allele.
+    - B2: A list of alleles representing the current values of the second allele.
+
+    Returns:
+    - A Pandas DataFrame containing the recoded alleles (`A1`, `A2`, `B1`, `B2`) and a boolean column (`keep`) indicating
+    whether each row should be kept or not.
+    '''
     ncA1 = [len(a) for a in A1]
     ncA2 = [len(a) for a in A2]
     ncB1 = [len(b) for b in B1]
@@ -141,6 +225,23 @@ def recode_indels_22(A1, A2, B1, B2):
 
 
 def recode_indels_21(A1, A2, B1):
+    '''
+    Recodes indels in a genetic dataset.
+
+    This function recodes indels (insertions and deletions) in a genetic dataset by comparing the lengths of alleles and
+    their corresponding indel codes. It updates the values of `B1` based on specific conditions related to the lengths of
+    `A1` and `A2` alleles and the indel codes. The function also calculates the values of `B2` based on the updated `B1`
+    values.
+
+    Parameters:
+    - A1: A list of alleles representing the original values of the first allele.
+    - A2: A list of alleles representing the original values of the second allele.
+    - B1: A list of alleles representing the current values of the first allele.
+
+    Returns:
+    - A Pandas DataFrame containing the recoded alleles (`A1`, `A2`, `B1`, `B2`) and a boolean column (`keep`) indicating
+      whether each row should be kept or not.
+    '''
     ncA1 = [len(a) for a in A1]
     ncA2 = [len(a) for a in A2]
     ncB1 = [len(b) for b in B1]
@@ -182,6 +283,23 @@ def recode_indels_21(A1, A2, B1):
 
 
 def recode_indels_12(A1, B1, B2):
+    '''
+    Recodes indels in a genetic dataset.
+
+    This function recodes indels (insertions and deletions) in a genetic dataset by comparing the lengths of alleles and
+    their corresponding indel codes. It updates the values of `A1` based on specific conditions related to the lengths of
+    `B1` and `B2` alleles and the indel codes. The function also calculates the values of `A2` based on the updated `A1`
+    values.
+
+    Parameters:
+    - A1: A list of alleles representing the original values of the first allele.
+    - B1: A list of alleles representing the current values of the first allele.
+    - B2: A list of alleles representing the current values of the second allele.
+
+    Returns:
+    - A Pandas DataFrame containing the recoded alleles (`A1`, `A2`, `B1`, `B2`) and a boolean column (`keep`) indicating
+      whether each row should be kept or not.
+    '''
     ncA1 = [len(a) for a in A1]
     ncB1 = [len(b) for b in B1]
     ncB2 = [len(b) for b in B2]
@@ -223,6 +341,24 @@ def recode_indels_12(A1, B1, B2):
 
 
 def harmonise_22(SNP, A1, A2, B1, B2, betaA, betaB, fA, fB, tolerance, action):
+    '''
+    Harmonizes genetic data in a 2-2 allele format.
+    Parameters:
+    - SNP: A list or Pandas Series of SNP identifiers.
+    - A1: A list or Pandas Series of alleles representing the original values of the first allele in the exposure variable.
+    - A2: A list or Pandas Series of alleles representing the original values of the second allele in the exposure variable.
+    - B1: A list or Pandas Series of alleles representing the current values of the first allele in the outcome variable.
+    - B2: A list or Pandas Series of alleles representing the current values of the second allele in the outcome variable.
+    - betaA: A list or Pandas Series of effect sizes for the exposure variable.
+    - betaB: A list or Pandas Series of effect sizes for the outcome variable.
+    - fA: A list or Pandas Series of allele frequencies for the exposure variable.
+    - fB: A list or Pandas Series of allele frequencies for the outcome variable.
+    - tolerance: A float specifying the tolerance level for allele frequency comparison.
+    - action: An integer specifying the action to be taken when swapping alleles.
+
+    Returns:
+    - Pandas DataFrame containing the harmonized genetic data, including the recoded alleles, effect sizes, allele frequencies, and flags indicating which rows should be removed due to incompatible alleles.
+    '''
     if len(SNP) == 0:
         return pd.DataFrame()
 
@@ -306,6 +442,24 @@ def harmonise_22(SNP, A1, A2, B1, B2, betaA, betaB, fA, fB, tolerance, action):
 
 
 def harmonise_21(SNP, A1, A2, B1, betaA, betaB, fA, fB, tolerance, action):
+    '''
+    Harmonizes genetic data in a 2-1 allele format.
+    Parameters:
+    - SNP: A list or Pandas Series of SNP identifiers.
+    - A1: A list or Pandas Series of alleles representing the original values of the first allele in the exposure variable.
+    - A2: A list or Pandas Series of alleles representing the original values of the second allele in the exposure variable.
+    - B1: A list or Pandas Series of alleles representing the current values of the first allele in the outcome variable.
+    - B2: A list or Pandas Series of alleles representing the current values of the second allele in the outcome variable.
+    - betaA: A list or Pandas Series of effect sizes for the exposure variable.
+    - betaB: A list or Pandas Series of effect sizes for the outcome variable.
+    - fA: A list or Pandas Series of allele frequencies for the exposure variable.
+    - fB: A list or Pandas Series of allele frequencies for the outcome variable.
+    - tolerance: A float specifying the tolerance level for allele frequency comparison.
+    - action: An integer specifying the action to be taken when swapping alleles.
+
+    Returns:
+    - Pandas DataFrame containing the harmonized genetic data, including the recoded alleles, effect sizes, allele frequencies, and flags indicating which rows should be removed due to incompatible alleles.
+    '''
     if len(SNP) == 0:
         return pd.DataFrame()
 
@@ -384,6 +538,24 @@ def harmonise_21(SNP, A1, A2, B1, betaA, betaB, fA, fB, tolerance, action):
     return d
 
 def harmonise_12(SNP, A1, B1, B2, betaA, betaB, fA, fB, tolerance, action):
+    '''
+    Harmonizes genetic data in a 1-2 allele format.
+    Parameters:
+    - SNP: A list or Pandas Series of SNP identifiers.
+    - A1: A list or Pandas Series of alleles representing the original values of the first allele in the exposure variable.
+    - A2: A list or Pandas Series of alleles representing the original values of the second allele in the exposure variable.
+    - B1: A list or Pandas Series of alleles representing the current values of the first allele in the outcome variable.
+    - B2: A list or Pandas Series of alleles representing the current values of the second allele in the outcome variable.
+    - betaA: A list or Pandas Series of effect sizes for the exposure variable.
+    - betaB: A list or Pandas Series of effect sizes for the outcome variable.
+    - fA: A list or Pandas Series of allele frequencies for the exposure variable.
+    - fB: A list or Pandas Series of allele frequencies for the outcome variable.
+    - tolerance: A float specifying the tolerance level for allele frequency comparison.
+    - action: An integer specifying the action to be taken when swapping alleles.
+
+    Returns:
+    - Pandas DataFrame containing the harmonized genetic data, including the recoded alleles, effect sizes, allele frequencies, and flags indicating which rows should be removed due to incompatible alleles.
+    '''
     if len(SNP) == 0:
         return pd.DataFrame()
     
@@ -464,6 +636,24 @@ def harmonise_12(SNP, A1, B1, B2, betaA, betaB, fA, fB, tolerance, action):
 
 
 def harmonise_11(SNP, A1, B1, betaA, betaB, fA, fB, tolerance, action):
+    '''
+    Harmonizes genetic data in a 1-1 allele format.
+    Parameters:
+    - SNP: A list or Pandas Series of SNP identifiers.
+    - A1: A list or Pandas Series of alleles representing the original values of the first allele in the exposure variable.
+    - A2: A list or Pandas Series of alleles representing the original values of the second allele in the exposure variable.
+    - B1: A list or Pandas Series of alleles representing the current values of the first allele in the outcome variable.
+    - B2: A list or Pandas Series of alleles representing the current values of the second allele in the outcome variable.
+    - betaA: A list or Pandas Series of effect sizes for the exposure variable.
+    - betaB: A list or Pandas Series of effect sizes for the outcome variable.
+    - fA: A list or Pandas Series of allele frequencies for the exposure variable.
+    - fB: A list or Pandas Series of allele frequencies for the outcome variable.
+    - tolerance: A float specifying the tolerance level for allele frequency comparison.
+    - action: An integer specifying the action to be taken when swapping alleles.
+
+    Returns:
+    - Pandas DataFrame containing the harmonized genetic data, including the recoded alleles, effect sizes, allele frequencies, and flags indicating which rows should be removed due to incompatible alleles.
+    '''
     if len(SNP) == 0:
         return pd.DataFrame()
     
@@ -509,6 +699,17 @@ def harmonise_11(SNP, A1, B1, betaA, betaB, fA, fB, tolerance, action):
 
 
 def harmonise(dat, tolerance, action):
+    '''
+    Harmonizes genetic data in different allele formats.
+
+    Parameters:
+    - dat: A Pandas DataFrame containing the genetic data.
+    - tolerance: A float specifying the tolerance level for allele frequency comparison.
+    - action: An integer specifying the action to be taken when swapping alleles.
+    
+    Returns:
+    - A harmonized Pandas DataFrame based on the specified action.
+    '''
     dat['orig_SNP'] = dat['SNP']
     SNP_index = dat.groupby('SNP').cumcount() + 1
     dat['SNP'] = dat['SNP'] + "_" + SNP_index.astype(str)
@@ -586,6 +787,16 @@ def harmonise(dat, tolerance, action):
 
 
 def check_required_columns(dat, column_type="exposure"):
+    '''
+    Checks the presence of required columns in the data.
+
+    Parameters:
+    - dat: A Pandas DataFrame containing the genetic data.
+    - column_type: A string specifying the column type to check (default: "exposure").
+
+    Returns:
+    - None
+    '''
     required_columns = [
         "SNP",
         f"id.{column_type}",
@@ -599,9 +810,9 @@ def check_required_columns(dat, column_type="exposure"):
         raise ValueError(f"The following required columns are missing from {column_type}: {', '.join(missing_columns)}")
     return None
 
-# e = extract_instruments("ieu-a-2")
-# o = extract_outcome_data(snps=e["SNP"], outcomes=["ieu-a-7"])
+e = extract_instruments("ieu-a-2")
+o = extract_outcome_data(snps=e["SNP"], outcomes=["ieu-a-7"])
 
-# dat = harmonise_data(e , o)
+dat = harmonise_data(e , o)
 
-# print (dat)
+print (dat)
