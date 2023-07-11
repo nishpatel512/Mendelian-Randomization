@@ -4,6 +4,10 @@ from scipy.stats import t,norm,chi2,stats
 from scipy.optimize import minimize
 import scipy.stats
 import statsmodels.api as sm
+from harmonise_data import *
+from extract_instruments import *
+from extract_outcome_data import *
+
 def default_parameters():
     return {
         "test_dist": "z",
@@ -17,175 +21,144 @@ def default_parameters():
         "loss.function": "huber",
         "shrinkage": False
     }
+
+
 def mr_method_list():
     a = [
         {
-            "obj": "mr_wald_ratio",
-            "name": "Wald ratio",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": True,
-            "heterogeneity_test": False
+            'obj': 'mr_wald_ratio',
+            'name': 'Wald ratio',
+            'PubmedID': '',
+            'Description': '',
+            'use_by_default': True,
+            'heterogeneity_test': False
         },
         {
-            "obj": "mr_two_sample_ml",
-            "name": "Maximum likelihood",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": True
+            'obj': 'mr_two_sample_ml',
+            'name': 'Maximum likelihood',
+            'PubmedID': '',
+            'Description': '',
+            'use_by_default': False,
+            'heterogeneity_test': True
         },
         {
-            "obj": "mr_egger_regression",
-            "name": "MR Egger",
-            "PubmedID": "26050253",
-            "Description": "",
-            "use_by_default": True,
-            "heterogeneity_test": True
+            'obj': 'mr_egger_regression',
+            'name': 'MR Egger',
+            'PubmedID': '26050253',
+            'Description': '',
+            'use_by_default': True,
+            'heterogeneity_test': True
         },
         {
-            "obj": "mr_egger_regression_bootstrap",
-            "name": "MR Egger (bootstrap)",
-            "PubmedID": "26050253",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": False
+            'obj': 'mr_egger_regression_bootstrap',
+            'name': 'MR Egger (bootstrap)',
+            'PubmedID': '26050253',
+            'Description': '',
+            'use_by_default': False,
+            'heterogeneity_test': False
         },
         {
-            "obj": "mr_simple_median",
-            "name": "Simple median",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": False
+            'obj': 'mr_simple_median',
+            'name': 'Simple median',
+            'PubmedID': '',
+            'Description': '',
+            'use_by_default': False,
+            'heterogeneity_test': False
         },
         {
-            "obj": "mr_weighted_median",
-            "name": "Weighted median",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": True,
-            "heterogeneity_test": False
+            'obj': 'mr_weighted_median',
+            'name': 'Weighted median',
+            'PubmedID': '',
+            'Description': '',
+            'use_by_default': True,
+            'heterogeneity_test': False
         },
         {
-            "obj": "mr_penalised_weighted_median",
-            "name": "Penalised weighted median",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": False
+            'obj': 'mr_penalised_weighted_median',
+            'name': 'Penalised weighted median',
+            'PubmedID': '',
+            'Description': '',
+            'use_by_default': False,
+            'heterogeneity_test': False
         },
         {
-            "obj": "mr_ivw",
-            "name": "Inverse variance weighted",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": True,
-            "heterogeneity_test": True
+            'obj': 'mr_ivw',
+            'name': 'Inverse variance weighted',
+            'PubmedID': '',
+            'Description': '',
+            'use_by_default': True,
+            'heterogeneity_test': True
         },
         {
-            "obj": "mr_ivw_radial",
-            "name": "IVW radial",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": True
+            'obj': 'mr_ivw_mre',
+            'name': 'Inverse variance weighted (multiplicative random effects)',
+            'PubmedID': '',
+            'Description': '',
+            'use_by_default': False,
+            'heterogeneity_test': False
         },
         {
-            "obj": "mr_ivw_mre",
-            "name": "Inverse variance weighted (multiplicative random effects)",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": False
+            'obj': 'mr_ivw_fe',
+            'name': 'Inverse variance weighted (fixed effects)',
+            'PubmedID': '',
+            'Description': '',
+            'use_by_default': False,
+            'heterogeneity_test': False
         },
         {
-            "obj": "mr_ivw_fe",
-            "name": "Inverse variance weighted (fixed effects)",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": False
+            'obj': 'mr_raps',
+            'name': 'Robust adjusted profile score (RAPS)',
+            'PubmedID': '',
+            'Description': '',
+            'use_by_default': False,
+            'heterogeneity_test': False
         },
         {
-            "obj": "mr_simple_mode",
-            "name": "Simple mode",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": True,
-            "heterogeneity_test": False
+            'obj': 'mr_sign',
+            'name': 'Sign concordance test',
+            'PubmedID': '',
+            'Description': 'Tests for concordance of signs between exposure and outcome',
+            'use_by_default': False,
+            'heterogeneity_test': False
         },
         {
-            "obj": "mr_weighted_mode",
-            "name": "Weighted mode",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": True,
-            "heterogeneity_test": False
-        },
-        {
-            "obj": "mr_weighted_mode_nome",
-            "name": "Weighted mode (NOME)",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": False
-        },
-        {
-            "obj": "mr_simple_mode_nome",
-            "name": "Simple mode (NOME)",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": False
-        },
-        {
-            "obj": "mr_raps",
-            "name": "Robust adjusted profile score (RAPS)",
-            "PubmedID": "",
-            "Description": "",
-            "use_by_default": False,
-            "heterogeneity_test": False
-        },
-        {
-            "obj": "mr_sign",
-            "name": "Sign concordance test",
-            "PubmedID": "",
-            "Description": "Tests for concordance of signs between exposure and outcome",
-            "use_by_default": False,
-            "heterogeneity_test": False
-        },
-        {
-            "obj": "mr_uwr",
-            "name": "Unweighted regression",
-            "PubmedID": "",
-            "Description": "Doesn't use any weights",
-            "use_by_default": False,
-            "heterogeneity_test": True
+            'obj': 'mr_uwr',
+            'name': 'Unweighted regression',
+            'PubmedID': '',
+            'Description': "Doesn't use any weights",
+            'use_by_default': False,
+            'heterogeneity_test': True
         }
     ]
-    return pd.DataFrame(a)
+    
+    df = pd.DataFrame(a)
+    df['heterogeneity_test'] = df['heterogeneity_test'].astype(bool)
+    df['use_by_default'] = df['use_by_default'].astype(bool)
+    return df
 
 def mr(dat, parameters=default_parameters(), method_list=mr_method_list()):
     global mr_keep
     mr_tab = pd.DataFrame()
-    for (id_exposure, id_outcome), x1 in dat.groupby(["id.exposure", "id.outcome"]):
-        x = x1[mr_keep(x1)]
+    for (id_exposure, id_outcome), x in dat.groupby(["id.exposure", "id.outcome"]):
+        #x = x1.loc['mr_keep']
         if x.shape[0] == 0:
             print(f"No SNPs available for MR analysis of '{id_exposure}' on '{id_outcome}'")
             continue
         else:
             print(f"Analysing '{id_exposure}' on '{id_outcome}'")
         
+        method_list = mr_method_list()['obj'].tolist()
+        print (method_list)
         res = {}
         for meth in method_list:
             res[meth] = globals()[meth](x["beta.exposure"], x["beta.outcome"], x["se.exposure"], x["se.outcome"], parameters)
-        
+            #res = list(map(lambda meth: globals()[meth](x["beta.exposure"], x["beta.outcome"], x["se.exposure"], x["se.outcome"], parameters), method_list))
+
         methl = mr_method_list()
         mr_tab = mr_tab.append(pd.DataFrame({
             "outcome": x["outcome"].iloc[0],
             "exposure": x["exposure"].iloc[0],
-            "method": methl.loc[methl["obj"].isin(method_list), "name"].tolist(),
+            "method": methl.loc[methl['obj'].isin(method_list), "name"].tolist(),
             "nsnp": [res[m]["nsnp"] for m in method_list],
             "b": [res[m]["b"] for m in method_list],
             "se": [res[m]["se"] for m in method_list],
@@ -195,48 +168,15 @@ def mr(dat, parameters=default_parameters(), method_list=mr_method_list()):
     mr_tab = mr_tab.dropna(subset=["b", "se", "pval"])
     return mr_tab
 
-
-
-def mr_meta_fixed_simple(b_exp, b_out, se_exp, se_out, parameters):
-    valid_indices = np.where(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out))
-    if len(valid_indices[0]) < 2:
-        return {"b": np.nan, "se": np.nan, "pval": np.nan, "nsnp": np.nan}
+def mr_wald_ratio(b_exp, b_out, se_exp, se_out, parameters):
+    if len(b_exp) > 1:
+        return {'b': np.nan, 'se': np.nan, 'pval': np.nan, 'nsnp': np.nan}
     
-    b = np.sum(b_exp[valid_indices] * b_out[valid_indices] / se_out[valid_indices]**2) / np.sum(b_exp[valid_indices]**2 / se_out[valid_indices]**2)
-    se = np.sqrt(1 / np.sum(b_exp[valid_indices]**2 / se_out[valid_indices]**2))
-    pval = 2 * (1 - stats.norm.cdf(np.abs(b) / se))
-
-    return {"b": b, "se": se, "pval": pval, "nsnp": len(valid_indices[0])}
-
-def mr_meta_fixed(b_exp, b_out, se_exp, se_out, parameters):
-    valid_indices = np.where(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out))
-    if len(valid_indices[0]) < 1:
-        return {"b": np.nan, "se": np.nan, "pval": np.nan, "nsnp": np.nan, "Q": np.nan, "Q_df": np.nan, "Q_pval": np.nan}
+    b = b_out / b_exp
+    se = se_out / np.abs(b_exp)
+    pval = norm.sf(np.abs(b) / se) * 2
     
-    ratio = b_out[valid_indices] / b_exp[valid_indices]
-    ratio_se = np.sqrt((se_out[valid_indices]**2 / b_exp[valid_indices]**2) + (b_out[valid_indices]**2 / b_exp[valid_indices]**4) * se_exp[valid_indices]**2 - 2 * (b_out[valid_indices] / b_exp[valid_indices]**3) * parameters["Cov"])
-    res = meta.metagen(ratio, ratio_se)
-    b = res["TE.fixed"]
-    se = res["seTE.fixed"]
-    pval = res["pval.fixed"]
-    Q_pval = 1 - chi2.cdf(res["Q"], res["df.Q"])
-
-    return {"b": b, "se": se, "pval": pval, "nsnp": len(valid_indices[0]), "Q": res["Q"], "Q_df": res["df.Q"], "Q_pval": Q_pval}
-
-def mr_meta_random(b_exp, b_out, se_exp, se_out, parameters):
-    valid_indices = np.where(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out))
-    if len(valid_indices[0]) < 2:
-        return {"b": np.nan, "se": np.nan, "pval": np.nan, "nsnp": np.nan, "Q": np.nan, "Q_df": np.nan, "Q_pval": np.nan}
-    
-    ratio = b_out[valid_indices] / b_exp[valid_indices]
-    ratio_se = np.sqrt((se_out[valid_indices]**2 / b_exp[valid_indices]**2) + (b_out[valid_indices]**2 / b_exp[valid_indices]**4) * se_exp[valid_indices]**2 - 2 * (b_out[valid_indices] / b_exp[valid_indices]**3) * parameters["Cov"])
-    res = meta.metagen(ratio, ratio_se)
-    b = res["TE.random"]
-    se = res["seTE.random"]
-    pval = res["pval.random"]
-    Q_pval = 1 - chi2.cdf(res["Q"], res["df.Q"])
-
-    return {"b": b, "se": se, "pval": pval, "nsnp": len(valid_indices[0]), "Q": res["Q"], "Q_df": res["df.Q"], "Q_pval": Q_pval}
+    return {'b': b, 'se': se, 'pval': pval, 'nsnp': 1}
 
 def mr_two_sample_ml(b_exp, b_out, se_exp, se_out, parameters):
     valid_indices = np.where(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out))
@@ -269,7 +209,13 @@ def mr_two_sample_ml(b_exp, b_out, se_exp, se_out, parameters):
     except:
         print("mr_two_sample_ml failed to converge")
         return {"b": np.nan, "se": np.nan, "pval": np.nan, "nsnp": np.nan, "Q": np.nan, "Q_df": np.nan, "Q_pval": np.nan}
+
+
 def mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters):
+    '''
+    Input: Beta values of exposure and outcomes\n
+    Output: 
+    '''
     if len(b_exp) != len(b_out) or len(se_exp) != len(se_out) or len(b_exp) != len(se_out):
         return {
             "b": np.nan,
@@ -286,7 +232,7 @@ def mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters):
             "smod": np.nan,
             "dat": np.nan
         }
-    
+
     nulllist = {
         "b": np.nan,
         "se": np.nan,
@@ -302,14 +248,14 @@ def mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters):
         "smod": np.nan,
         "dat": np.nan
     }
-    
+
     if np.sum(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out)) < 3:
         return nulllist
 
     def sign0(x):
         x[x == 0] = 1
         return np.sign(x)
-    
+
     to_flip = sign0(b_exp) == -1
     b_out = b_out * sign0(b_exp)
     b_exp = np.abs(b_exp)
@@ -320,38 +266,39 @@ def mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters):
         "se_out": se_out,
         "flipped": to_flip
     }
-    
-    mod = stats.linregress(b_exp, b_out, weights=1 / se_out**2)
-    if len(mod) > 1:
-        b = mod.slope
-        se = mod.stderr / min(1, mod.resid.std())
-        pval = 2 * t.sf(abs(b / se), len(b_exp) - 2)
 
-        b_i = mod.intercept
-        se_i = mod.intercept_stderr / min(1, mod.resid.std())
-        pval_i = 2 * t.sf(abs(b_i / se_i), len(b_exp) - 2)
+    X = sm.add_constant(b_exp)
+    weights = 1 / se_out ** 2
 
-        Q = mod.resid.std()**2 * (len(b_exp) - 2)
-        Q_df = len(b_exp) - 2
-        Q_pval = chi2.sf(Q, Q_df)
+    model = sm.WLS(b_out, X, weights=weights)
+    results = model.fit()
 
-        return {
-            "b": b,
-            "se": se,
-            "pval": pval,
-            "nsnp": len(b_exp),
-            "b_i": b_i,
-            "se_i": se_i,
-            "pval_i": pval_i,
-            "Q": Q,
-            "Q_df": Q_df,
-            "Q_pval": Q_pval,
-            "mod": mod,
-            "dat": dat
-        }
-    else:
-        print("Collinearities in MR Egger, try LD pruning the exposure variables.")
-        return nulllist
+    b = results.params[1]
+    se = results.bse[1]
+    pval = 2 * stats.t.sf(abs(b / se), len(b_exp) - 2)
+
+    b_i = results.params[0]
+    se_i = results.bse[0]
+    pval_i = 2 * stats.t.sf(abs(b_i / se_i), len(b_exp) - 2)
+
+    Q = results.scale * (len(b_exp) - 2)
+    Q_df = len(b_exp) - 2
+    Q_pval = stats.chi2.sf(Q, Q_df)
+
+    return {
+        "b": b,
+        "se": se,
+        "pval": pval,
+        "nsnp": len(b_exp),
+        "b_i": b_i,
+        "se_i": se_i,
+        "pval_i": pval_i,
+        "Q": Q,
+        "Q_df": Q_df,
+        "Q_pval": Q_pval,
+        "mod": results,
+        "dat": dat
+    }
 
 def linreg(x, y, w=None):
     if w is None:
@@ -563,8 +510,8 @@ def mr_ivw(b_exp, b_out, se_exp, se_out, parameters):
         }
     
     ivw_res = sm.OLS(b_out, sm.add_constant(b_exp), weights=1/se_out**2).fit()
-    b = ivw_res.params["b_exp"]
-    se = ivw_res.bse["b_exp"] / min(1, ivw_res.mse_resid)
+    b = ivw_res.params[1]
+    se = ivw_res.bse[1] / min(1, ivw_res.mse_resid)
     pval = 2 * norm.sf(abs(b / se))
     Q_df = len(b_exp) - 1
     Q = ivw_res.mse_resid * Q_df
@@ -593,8 +540,8 @@ def mr_uwr(b_exp, b_out, se_exp, se_out, parameters):
         }
     
     ivw_res = sm.OLS(b_out, sm.add_constant(b_exp)).fit()
-    b = ivw_res.params["b_exp"]
-    se = ivw_res.bse["b_exp"] / min(1, ivw_res.mse_resid)
+    b = ivw_res.params[1]
+    se = ivw_res.bse[1] / min(1, ivw_res.mse_resid)
     pval = 2 * norm.sf(abs(b / se))
     Q_df = len(b_exp) - 1
     Q = ivw_res.mse_resid * Q_df
@@ -623,8 +570,8 @@ def mr_ivw_mre(b_exp, b_out, se_exp, se_out, parameters):
         }
     
     ivw_res = sm.OLS(b_out, sm.add_constant(b_exp), weights=1/se_out**2).fit()
-    b = ivw_res.params["b_exp"]
-    se = ivw_res.bse["b_exp"]
+    b = ivw_res.params[1]
+    se = ivw_res.bse[1]
     pval = 2 * norm.sf(abs(b / se))
     Q_df = len(b_exp) - 1
     Q = ivw_res.mse_resid * Q_df
@@ -653,8 +600,8 @@ def mr_ivw_fe(b_exp, b_out, se_exp, se_out, parameters):
         }
     
     ivw_res = sm.OLS(b_out, sm.add_constant(b_exp), weights=1/se_out**2).fit()
-    b = ivw_res.params["b_exp"]
-    se = ivw_res.bse["b_exp"] / ivw_res.mse_resid**0.5
+    b = ivw_res.params[1]
+    se = ivw_res.bse[1] / ivw_res.mse_resid**0.5
     pval = 2 * norm.sf(abs(b / se))
     Q_df = len(b_exp) - 1
     Q = ivw_res.mse_resid * Q_df
@@ -710,3 +657,10 @@ def mr_sign(b_exp, b_out, se_exp, se_out, parameters):
         "pval": 2 * stats.norm.sf(np.abs(np.nanmedian(betaIV) / np.nanstd(betaIV))),
         "nsnp": np.sum(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out))
     }
+# e = extract_instruments("ieu-a-2")
+# o = extract_outcome_data(snps=e["SNP"], outcomes=["ieu-a-7"])
+
+# dat = harmonise_data(e , o)
+
+# res = mr(dat)
+# print (res)
