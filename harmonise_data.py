@@ -38,7 +38,6 @@ def harmonise_data(exposure_dat, outcome_dat, action=2):
     for i in range(combs.shape[0]):
         x = res_tab[(res_tab["id.exposure"] == combs.iloc[i]["id.exposure"]) & 
                     (res_tab["id.outcome"] == combs.iloc[i]["id.outcome"])]
-        
         print(f"Harmonising {x['exposure'].iloc[0]} ({x['id.exposure'].iloc[0]}) and {x['outcome'].iloc[0]} ({x['id.outcome'].iloc[0]})")
         
         x = harmonise(x, 0.08, x["action"].iloc[0])
@@ -810,9 +809,9 @@ def check_required_columns(dat, column_type="exposure"):
         raise ValueError(f"The following required columns are missing from {column_type}: {', '.join(missing_columns)}")
     return None
 
-e = extract_instruments("ieu-a-2")
-o = extract_outcome_data(snps=e["SNP"], outcomes=["ieu-a-7"])
+# e = extract_instruments("ieu-a-2")
+# o = extract_outcome_data(snps=e["SNP"], outcomes=["ieu-a-7"])
 
-dat = harmonise_data(e , o)
+# dat = harmonise_data(e , o)
 
-print (dat)
+# print (dat)
