@@ -8,10 +8,28 @@ from read_outcome_data import *
 from extract_instruments import *
 
 def extract_outcome_data(snps, outcomes, proxies=True, rsq=0.8, align_alleles=1, palindromes=1, maf_threshold=0.3, access_token=None, splitsize=10000, proxy_splitsize=500):
+    '''
+    Extracts outcome data for the given SNPs and outcomes using the ieugwaspy library.
+
+    Args:
+    - snps (list): List of SNPs for which outcome data is to be extracted.
+    - outcomes (list): List of outcomes for which data is to be extracted.
+    - proxies (bool, optional): Flag indicating whether to find proxies for missing SNPs. Default is True.
+    - rsq (float, optional): The r-squared threshold for LD proxy search. Default is 0.8.
+    - align_alleles (int, optional): Flag indicating whether to align alleles for proxies. Default is 1.
+    - palindromes (int, optional): Flag indicating whether to consider palindromic SNPs for proxies. Default is 1.
+    - maf_threshold (float, optional): The minor allele frequency threshold for proxies. Default is 0.3.
+    - access_token (str, optional): Access token for authentication. Default is None.
+    - splitsize (int, optional): Chunk size for splitting the data extraction process. Default is 10000.
+    - proxy_splitsize (int, optional): Chunk size for splitting the proxy search process. Default is 500.
+
+    Returns:
+    firstpass (pandas.DataFrame): DataFrame containing the extracted outcome data.
+    '''
     outcomes = list(set(outcomes))
     snps = list(set(snps))
     firstpass = extract_outcome_data_internal(snps, outcomes, proxies=False, access_token=access_token, splitsize=splitsize)
-
+    proxies = False
     if proxies:
         for i in range(len(outcomes)):
             if firstpass is None:
@@ -29,13 +47,30 @@ def extract_outcome_data(snps, outcomes, proxies=True, rsq=0.8, align_alleles=1,
 
 
 def extract_outcome_data_internal(snps, outcomes, proxies=True, rsq=0.8, align_alleles=1, palindromes=1, maf_threshold=0.3, access_token=None, splitsize=10000):
+    '''
+    Internal function to extract outcome data for the given SNPs and outcomes using the ieugwaspy library.
+
+    Args:
+    - snps (list): List of SNPs for which outcome data is to be extracted.
+    - outcomes (list): List of outcomes for which data is to be extracted.
+    - proxies (bool, optional): Flag indicating whether to find proxies for missing SNPs. Default is True.
+    - rsq (float, optional): The r-squared threshold for LD proxy search. Default is 0.8.
+    - align_alleles (int, optional): Flag indicating whether to align alleles for proxies. Default is 1.
+    - palindromes (int, optional): Flag indicating whether to consider palindromic SNPs for proxies. Default is 1.
+    - maf_threshold (float, optional): The minor allele frequency threshold for proxies. Default is 0.3.
+    - access_token (str, optional): Access token for authentication. Default is None.
+    - splitsize (int, optional): Chunk size for splitting the data extraction process. Default is 10000.
+
+    Returns:
+    d (pandas.DataFrame): DataFrame containing the extracted outcome data.
+    '''
     snps = list(set(snps))
     print(f"Extracting data for {len(snps)} SNP(s) from {len(set(outcomes))} GWAS(s)")
     outcomes = list(set(outcomes))  
 
-    if not proxies:
+    if (proxies == False):
         proxies = 0
-    elif proxies:
+    elif (proxies==True):
         proxies = 1
     else:
         raise ValueError("'proxies' argument should be True or False")
@@ -86,6 +121,15 @@ def extract_outcome_data_internal(snps, outcomes, proxies=True, rsq=0.8, align_a
 
 
 def cleanup_outcome_data(d):
+    '''
+    Cleans up the outcome data by replacing invalid values with NaN.
+
+    Args:
+    d (pandas.DataFrame): DataFrame containing the outcome data.
+
+    Returns:
+    d (pandas.DataFrame): Cleaned DataFrame.
+    '''
     d.loc[d["se.outcome"] <= 0, "se.outcome"] = np.nan
     d.loc[(d["eaf.outcome"] <= 0) | (d["eaf.outcome"] >= 1), "eaf.outcome"] = np.nan
     d.loc[d["beta.outcome"] == -9, "beta.outcome"] = np.nan
@@ -93,10 +137,29 @@ def cleanup_outcome_data(d):
 
 
 def get_se(eff, pval):
+    '''
+    Calculates the standard error (SE) based on the effect size and p-value.
+
+    Args:
+    eff (float): Effect size.
+    pval (float): P-value.
+
+    Returns:
+    se (float): Standard error.
+    '''
     return abs(eff) / abs(stats.norm.ppf(pval / 2))
 
 
 def format_d(d):
+    '''
+    Formats the outcome data DataFrame to match the required format.
+
+    Args:
+    d (pandas.DataFrame): DataFrame containing the outcome data.
+
+    Returns:
+    d (pandas.DataFrame): Formatted DataFrame.
+    '''
     d1 = pd.DataFrame({
         "SNP": d["rsid"].astype(str),
         "chr": d["chr"].astype(str),
@@ -160,9 +223,9 @@ def format_d(d):
 
 
 
-d = extract_instruments("ieu-a-2")
-#print(d)
-#snps = d['rsid']
-#outcomes = "ieu-a-7"
-outcome_dat = extract_outcome_data(snps=d["SNP"], outcomes=["ieu-a-7"])
-print (outcome_dat)
+# d = extract_instruments("ieu-a-2")
+# #print(d)
+# # #snps = d['rsid']
+# # #outcomes = "ieu-a-7"
+# outcome_dat = extract_outcome_data(snps=d["SNP"], outcomes=["ieu-a-7"])
+# print (outcome_dat)
