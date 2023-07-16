@@ -16,11 +16,40 @@ def format_data(dat, type="exposure", snps=None, header=True,
                 gene_col="gene", id_col="id", min_pval=1e-200,
                 z_col="z", info_col="info", chr_col="chr",
                 pos_col="pos", log_pval=False):
+    '''
+Description:
+This function is used to format and preprocess genetic association data for Mendelian randomization (MR) analysis. It takes a pandas DataFrame containing genetic association data, which typically includes information about the exposure (e.g., risk factor) and outcome (e.g., disease) variables. The function performs several data cleaning and manipulation steps to ensure the data is in a suitable format for conducting MR analysis.
+
+Parameters:
+- dat: pandas DataFrame
+  Input data containing genetic association information, such as beta coefficients, standard errors, p-values, allele frequencies, sample sizes, etc.
+
+- type: str (optional, default: "exposure")
+  Specifies whether the data represents the "exposure" or "outcome" variable.
+
+- snps: list (optional, default: None)
+  A list of specific SNPs to be included in the analysis. If provided, the function filters the data to include only the specified SNPs.
+
+- header: bool (optional, default: True)
+  Specifies whether the input DataFrame has a header row.
+
+- phenotype_col, snp_col, beta_col, se_col, eaf_col, effect_allele_col, other_allele_col, pval_col, units_col, ncase_col, ncontrol_col, samplesize_col, gene_col, id_col, min_pval, z_col, info_col, chr_col, pos_col: str (optional)
+  Column names corresponding to specific genetic association data in the input DataFrame.
+
+- log_pval: bool (optional, default: False)
+  Specifies whether p-values are provided in logarithmic scale (log10).
+
+Returns:
+- dat: pandas DataFrame
+  The formatted and preprocessed data, ready for Mendelian randomization analysis.
+'''
+
     # Define the list of all column names
     all_cols = [phenotype_col, snp_col, beta_col, se_col, eaf_col,
                 effect_allele_col, other_allele_col, pval_col,
                 units_col, ncase_col, ncontrol_col, samplesize_col,
                 gene_col, id_col, z_col, info_col, chr_col, pos_col]
+    
 
     # Check if the specified columns are present in the data
     present_cols = []
@@ -276,7 +305,7 @@ def check_column_character(dat, col_name, new_col_name):
         dat[new_col_name] = dat[col_name].astype(str)
     else:
         dat[new_col_name] = dat[col_name]
-
+    
     dat[new_col_name] = dat[new_col_name].str.upper()
     index = ~dat[new_col_name].str.match(r"^[ACTG]+$") & ~dat[new_col_name].isin(["D", "I"])
     if any(index):
