@@ -64,9 +64,9 @@ We are making use of python package called MRPackage which has all the functiona
   other_allele_col="other_allele", pval_col="pval", units_col="units", ncase_col="ncase", ncontrol_col="ncontrol", samplesize_col="samplesize",
   gene_col="gene", id_col="id", min_pval=1e-200, z_col="z", info_col="info", chr_col="chr",pos_col="pos", log_pval=False)
   '''
-    Description: This function is used to format and preprocess genetic association data for Mendelian randomization (MR) analysis. It takes a pandas DataFrame containing genetic     
-    association data, which typically includes information about the exposure (e.g., risk factor) and outcome (e.g., disease) variables. The function performs several data cleaning and 
-    manipulation steps to ensure the data is in a suitable format for conducting MR analysis.
+    Description: This function is used to format and preprocess genetic association data for Mendelian randomization (MR) analysis. It takes a
+    pandas DataFrame containing genetic association data, which typically includes information about the exposure (e.g., risk factor) and
+    outcome (e.g., disease) variables. The function performs several data cleaning and manipulation steps to ensure the data is in a suitable format for conducting MR analysis.
 
     Parameters:
     - dat: pandas DataFrame: Input data containing genetic association information, such as beta coefficients, standard errors, p-values, allele frequencies, sample sizes, etc.
@@ -95,24 +95,28 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   mr(dat, parameters=default_parameters(), method_list=mr_method_list())
   '''
-    Description: The harmonise_data function is used to perform harmonization of genetic effect sizes and alleles for Mendelian Randomization (MR) analysis. It ensures that the effect of      a Single Nucleotide Polymorphism (SNP) on both the exposure and outcome variables is measured relative to the same allele.
+    Description: The harmonise_data function is used to perform harmonization of genetic effect sizes and alleles for Mendelian Randomization (MR) analysis.
+    It ensures that the effect of a Single Nucleotide Polymorphism (SNP) on both the exposure and outcome variables is measured relative to the same allele.
     Parameters:
     -exposure_data (pandas.DataFrame): DataFrame containing the exposure data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
     -outcome_data (pandas.DataFrame): DataFrame containing the outcome data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
     Returns:
-    harmonized_data (pandas.DataFrame): Data frame with harmonized genetic effect sizes and alleles, where the effect sizes are relative to the same allele for both exposure and outcome       data.
+    harmonized_data (pandas.DataFrame): Data frame with harmonized genetic effect sizes and alleles, where the effect sizes are relative to the
+    same allele for both exposure and outcome data.
   '''
   ```
 
   ```python
   mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters)
   '''
-    Description: The harmonise_data function is used to perform harmonization of genetic effect sizes and alleles for Mendelian Randomization (MR) analysis. It ensures that the effect of      a Single Nucleotide Polymorphism (SNP) on both the exposure and outcome variables is measured relative to the same allele.
+    Description: The harmonise_data function is used to perform harmonization of genetic effect sizes and alleles for Mendelian Randomization (MR) analysis.
+    It ensures that the effect of a Single Nucleotide Polymorphism (SNP) on both the exposure and outcome variables is measured relative to the same allele.
     Parameters:
     -exposure_data (pandas.DataFrame): DataFrame containing the exposure data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
     -outcome_data (pandas.DataFrame): DataFrame containing the outcome data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
     Returns:
-    harmonized_data (pandas.DataFrame): Data frame with harmonized genetic effect sizes and alleles, where the effect sizes are relative to the same allele for both exposure and outcome 
+    harmonized_data (pandas.DataFrame): Data frame with harmonized genetic effect sizes and alleles, where the effect sizes are relative to the same
+    allele for both exposure and outcome 
     data.
   '''
   ```
@@ -222,7 +226,8 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   mr_scatter_plot(mr_results, dat)
     '''
-    Description: This function creates scatter plots to compare SNP effects on the exposure variable with SNP effects on the outcome variable for Mendelian Randomization (MR) analysis         results.
+    Description: This function creates scatter plots to compare SNP effects on the exposure variable with SNP effects on the
+    outcome variable for Mendelian Randomization (MR) analysis results.
     Parameters:
     -mr_results (pandas.DataFrame): DataFrame containing MR analysis results.
     -dat (pandas.DataFrame): DataFrame containing harmonized data.
@@ -342,11 +347,13 @@ We are making use of python package called MRPackage which has all the functiona
   ```
 
   ```python
-  read_exposure_data(filename, clump=False, sep=" ", phenotype_col="Phenotype", snp_col="SNP", beta_col="beta", se_col="se", eaf_col="eaf", effect_allele_col="effect_allele",
-                       other_allele_col="other_allele", pval_col="pval", units_col="units", ncase_col="ncase", ncontrol_col="ncontrol", samplesize_col="samplesize",
-                       gene_col="gene", id_col="id", min_pval=1e-200, log_pval=False, chr_col="chr", pos_col="pos")
+  read_exposure_data(filename, clump=False, sep=" ", phenotype_col="Phenotype", snp_col="SNP", beta_col="beta", se_col="se", eaf_col="eaf",
+  effect_allele_col="effect_allele", other_allele_col="other_allele", pval_col="pval", units_col="units", ncase_col="ncase", ncontrol_col="ncontrol",
+  samplesize_col="samplesize", gene_col="gene", id_col="id", min_pval=1e-200, log_pval=False, chr_col="chr", pos_col="pos")
     '''
-    Description: This function reads exposure data from a text file and processes it into a formatted DataFrame. The function allows for customization of column names and formatting           options to ensure the data is appropriately structured. If required, it can also perform clumping of the data, which groups variants that are in linkage disequilibrium (LD) with each      other based on specified parameters.
+    Description: This function reads exposure data from a text file and processes it into a formatted DataFrame. The function allows for
+    customization of column names and formatting options to ensure the data is appropriately structured. If required, it can also perform
+    clumping of the data, which groups variants that are in linkage disequilibrium (LD) with each other based on specified parameters.
 
     Parameters:
       -filename (str): The path to the text file containing the exposure data.
@@ -376,9 +383,9 @@ We are making use of python package called MRPackage which has all the functiona
   ```
 
   ```python
-  read_outcome_data(filename, snps=None, sep=" ", phenotype_col="Phenotype", snp_col="SNP", beta_col="beta", se_col="se", eaf_col="eaf", effect_allele_col="effect_allele", 
-  other_allele_col="other_allele", pval_col="pval", units_col="units", ncase_col="ncase", ncontrol_col="ncontrol", samplesize_col="samplesize", gene_col="gene", id_col="id", min_pval=1e- 
-  200, log_pval=False, chr_col="chr", pos_col="pos")
+  read_outcome_data(filename, snps=None, sep=" ", phenotype_col="Phenotype", snp_col="SNP", beta_col="beta", se_col="se", eaf_col="eaf",
+  effect_allele_col="effect_allele", other_allele_col="other_allele", pval_col="pval", units_col="units", ncase_col="ncase", ncontrol_col="ncontrol",
+  samplesize_col="samplesize", gene_col="gene", id_col="id", min_pval=1e-  200, log_pval=False, chr_col="chr", pos_col="pos")
     '''
     Description: This function reads outcome data from a text file and formats it for Mendelian Randomization (MR) analysis.
 
@@ -413,7 +420,8 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   weighted_median(b_iv, weights)
   '''
-  Description: The weighted_median function calculates the weighted median of a given set of beta values (b_iv) using provided weights. It is used in Mendelian Randomization (MR) analysis   to estimate causal effects by combining instrumental variable (IV) effect estimates.
+  Description: The weighted_median function calculates the weighted median of a given set of beta values (b_iv) using provided weights.
+  It is used in Mendelian Randomization (MR) analysis   to estimate causal effects by combining instrumental variable (IV) effect estimates.
 
   Parameters:
   -b_iv (array-like): Array of instrumental variable effect estimates (betaIV) for each SNP.
@@ -426,8 +434,8 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   weighted_median_bootstrap(b_exp, b_out, se_exp, se_out, weights, nboot)
   '''
-  Description: The weighted_median_bootstrap function calculates the standard error of the weighted median estimate of instrumental variable (IV) effect in Mendelian Randomization (MR) 
-  analysis using bootstrap resampling.
+  Description: The weighted_median_bootstrap function calculates the standard error of the weighted median estimate of instrumental
+  variable (IV) effect in Mendelian Randomization (MR) analysis using bootstrap resampling.
 
   Parameters:  
   -b_exp (array-like): Beta values of the exposure variable.
