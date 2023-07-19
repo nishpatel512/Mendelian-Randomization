@@ -378,7 +378,7 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   read_outcome_data(filename, snps=None, sep=" ", phenotype_col="Phenotype", snp_col="SNP", beta_col="beta", se_col="se", eaf_col="eaf", effect_allele_col="effect_allele", 
   other_allele_col="other_allele", pval_col="pval", units_col="units", ncase_col="ncase", ncontrol_col="ncontrol", samplesize_col="samplesize", gene_col="gene", id_col="id", min_pval=1e- 
-  200, log_pval=False, chr_col="chr", pos_col="pos"):
+  200, log_pval=False, chr_col="chr", pos_col="pos")
     '''
     Description: This function reads outcome data from a text file and formats it for Mendelian Randomization (MR) analysis.
 
@@ -414,13 +414,30 @@ We are making use of python package called MRPackage which has all the functiona
   weighted_median(b_iv, weights)
   '''
   Description: The weighted_median function calculates the weighted median of a given set of beta values (b_iv) using provided weights. It is used in Mendelian Randomization (MR) analysis   to estimate causal effects by combining instrumental variable (IV) effect estimates.
-  Parameters:
 
+  Parameters:
   -b_iv (array-like): Array of instrumental variable effect estimates (betaIV) for each SNP.
   -weights (array-like): Array of weights corresponding to each betaIV estimate.
-  Returns:
 
+  Returns:
   b (float): Weighted median estimate of the instrumental variable effect (b_iv) using the given weights.
   '''
+  ```
+  ```python
+  weighted_median_bootstrap(b_exp, b_out, se_exp, se_out, weights, nboot)
+  '''
+  Description: The weighted_median_bootstrap function calculates the standard error of the weighted median estimate of instrumental variable (IV) effect in Mendelian Randomization (MR) 
+  analysis using bootstrap resampling.
 
+  Parameters:  
+  -b_exp (array-like): Beta values of the exposure variable.
+  -b_out (array-like): Beta values of the outcome variable.
+  -se_exp (array-like): Standard errors of the exposure variable.
+  -se_out (array-like): Standard errors of the outcome variable.
+  -weights (array-like): Array of weights corresponding to each IV effect estimate.
+  -nboot (int): Number of bootstrap iterations.
+
+  Returns:
+  se (float): Standard error of the weighted median estimate calculated using bootstrap resampling.
+    '''
   ```
