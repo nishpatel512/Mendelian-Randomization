@@ -8,7 +8,8 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   available_outcomes()
   '''
-    Description: Retrieves GWAS (Genome-Wide Association Study) information using the ieugwaspy library and returns it as a Pandas DataFrame.
+    Description: Retrieves GWAS (Genome-Wide Association Study) information using the ieugwaspy library and returns
+    it as a Pandas DataFrame.
     Returns: df (pandas.DataFrame): DataFrame containing GWAS information, with outcomes as the index.
   '''
   ```
@@ -60,21 +61,26 @@ We are making use of python package called MRPackage which has all the functiona
   ```
 
   ```python
-  format_data(dat, type="exposure", snps=None, header=True, phenotype_col="Phenotype", snp_col="SNP",beta_col="beta", se_col="se", eaf_col="eaf", effect_allele_col="effect_allele",
-  other_allele_col="other_allele", pval_col="pval", units_col="units", ncase_col="ncase", ncontrol_col="ncontrol", samplesize_col="samplesize",
-  gene_col="gene", id_col="id", min_pval=1e-200, z_col="z", info_col="info", chr_col="chr",pos_col="pos", log_pval=False)
+  format_data(dat, type="exposure", snps=None, header=True, phenotype_col="Phenotype", snp_col="SNP",beta_col="beta",
+  se_col="se", eaf_col="eaf", effect_allele_col="effect_allele", other_allele_col="other_allele", pval_col="pval",
+  units_col="units", ncase_col="ncase", ncontrol_col="ncontrol", samplesize_col="samplesize", gene_col="gene", id_col="id",
+  min_pval=1e-200, z_col="z", info_col="info", chr_col="chr",pos_col="pos", log_pval=False)
   '''
     Description: This function is used to format and preprocess genetic association data for Mendelian randomization (MR) analysis. It takes a
     pandas DataFrame containing genetic association data, which typically includes information about the exposure (e.g., risk factor) and
-    outcome (e.g., disease) variables. The function performs several data cleaning and manipulation steps to ensure the data is in a suitable format for conducting MR analysis.
+    outcome (e.g., disease) variables. The function performs several data cleaning and manipulation steps to ensure the data is in a suitable
+    format for conducting MR analysis.
 
     Parameters:
-    - dat: pandas DataFrame: Input data containing genetic association information, such as beta coefficients, standard errors, p-values, allele frequencies, sample sizes, etc.
+    - dat: pandas DataFrame: Input data containing genetic association information, such as beta coefficients, standard errors, p-values,
+      allele frequencies, sample sizes, etc.
     - type: str (optional, default: "exposure"): Specifies whether the data represents the "exposure" or "outcome" variable.
-    - snps: list (optional, default: None): A list of specific SNPs to be included in the analysis. If provided, the function filters the data to include only the specified SNPs.
+    - snps: list (optional, default: None): A list of specific SNPs to be included in the analysis. If provided, the function filters
+      the data to include only the specified SNPs.
     - header: bool (optional, default: True): Specifies whether the input DataFrame has a header row.
-    - phenotype_col, snp_col, beta_col, se_col, eaf_col, effect_allele_col, other_allele_col, pval_col, units_col, ncase_col, ncontrol_col, samplesize_col, gene_col, id_col, min_pval, 
-    z_col, info_col, chr_col, pos_col: str (optional): Column names corresponding to specific genetic association data in the input DataFrame.
+    - phenotype_col, snp_col, beta_col, se_col, eaf_col, effect_allele_col, other_allele_col, pval_col, units_col, ncase_col, ncontrol_col,
+      samplesize_col, gene_col, id_col, min_pval, z_col, info_col, chr_col, pos_col: str (optional): Column names corresponding to specific
+      genetic association data in the input DataFrame.
     - log_pval: bool (optional, default: False): Specifies whether p-values are provided in logarithmic scale (log10).
 
     Returns:
@@ -124,13 +130,15 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   mr_egger_regression_bootstrap(b_exp, b_out, se_exp, se_out, parameters)
   '''
-    Description: This function performs Mendelian Randomization (MR) using Egger regression with bootstrap for statistical inference. It estimates causal effects of an exposure variable       on an outcome variable by harmonizing genetic effect sizes and alleles.
+    Description: This function performs Mendelian Randomization (MR) using Egger regression with bootstrap for statistical inference.
+    It estimates causal effects of an exposure variable on an outcome variable by harmonizing genetic effect sizes and alleles.
     Parameters:
     -b_exp (array-like): Beta values of the exposure variable.
     -b_out (array-like): Beta values of the outcome variable.
     -se_exp (array-like): Standard errors of the exposure variable.
     -se_out (array-like): Standard errors of the outcome variable.
-    -parameters (dict): Dictionary containing additional parameters for the bootstrap process. Should contain the "nboot" parameter indicating the number of bootstrap iterations.
+    -parameters (dict): Dictionary containing additional parameters for the bootstrap process. Should contain the "nboot" parameter
+     indicating the number of bootstrap iterations.
     Returns:
     result (dict): Dictionary containing the MR estimates, standard errors, and p-values for the causal effect, as well as for the instrument strength.
   '''
@@ -166,7 +174,8 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   mr_ivw_fe(b_exp, b_out, se_exp, se_out, parameters)
   '''
-    Description: This function performs Mendelian Randomization (MR) using the Inverse Variance Weighted (IVW) method with fixed-effects standard error estimation.
+    Description: This function performs Mendelian Randomization (MR) using the Inverse Variance Weighted (IVW) method with
+    fixed-effects standard error estimation.
     Parameters:
     -b_exp (array-like): Beta values of the exposure variable.
     -b_out (array-like): Beta values of the outcome variable.
@@ -181,7 +190,8 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   mr_ivw_mre(b_exp, b_out, se_exp, se_out, parameters)
   '''
-    Description: This function performs Mendelian Randomization (MR) using the Inverse Variance Weighted (IVW) method with standard errors that account for multi-variant effects.
+    Description: This function performs Mendelian Randomization (MR) using the Inverse Variance Weighted (IVW) method
+    with standard errors that account for multi-variant effects.
     Parameters:
     -b_exp (array-like): Beta values of the exposure variable.
     -b_out (array-like): Beta values of the outcome variable.
@@ -217,7 +227,8 @@ We are making use of python package called MRPackage which has all the functiona
     -b_out (array-like): Beta values of the outcome variable.
     -se_exp (array-like): Standard errors of the exposure variable.
     -se_out (array-like): Standard errors of the outcome variable.
-    -parameters (dict): Dictionary containing additional parameters for the MR-RAPS method, including "over_dispersion", "loss_function", and "shrinkage".
+    -parameters (dict): Dictionary containing additional parameters for the MR-RAPS method, including "over_dispersion", "loss_function",
+     and "shrinkage".
     Returns:
     result (dict): Dictionary containing the MR estimates, robust standard errors, and p-values for the causal effect.
     '''
@@ -277,14 +288,16 @@ We are making use of python package called MRPackage which has all the functiona
     - se_out (array-like): Standard errors of the outcome variable.
     - parameters (dict): Dictionary containing additional parameters for MR analysis.
     Returns:
-    result (DataFrame): A pandas DataFrame containing the MR estimates, standard errors, and p-values for each SNP within each exposure-outcome pair.
+    result (DataFrame): A pandas DataFrame containing the MR estimates, standard errors, and p-values for each SNP within each
+    exposure-outcome pair.
     '''
   ```
 
   ```python
   mr_two_sample_ml(b_exp, b_out, se_exp, se_out, parameters)
     '''
-    Description: This function calculates Mendelian Randomization (MR) estimates using the two-sample instrumental variable method with maximum likelihood estimation.   
+    Description: This function calculates Mendelian Randomization (MR) estimates using the two-sample instrumental
+    variable method with maximum likelihood estimation.   
     Parameters:
     - b_exp (array-like): Beta values of the exposure variable.
     - b_out (array-like): Beta values of the outcome variable.
@@ -421,7 +434,7 @@ We are making use of python package called MRPackage which has all the functiona
   weighted_median(b_iv, weights)
   '''
   Description: The weighted_median function calculates the weighted median of a given set of beta values (b_iv) using provided weights.
-  It is used in Mendelian Randomization (MR) analysis   to estimate causal effects by combining instrumental variable (IV) effect estimates.
+  It is used in Mendelian Randomization (MR) analysis to estimate causal effects by combining instrumental variable (IV) effect estimates.
 
   Parameters:
   -b_iv (array-like): Array of instrumental variable effect estimates (betaIV) for each SNP.
