@@ -101,14 +101,14 @@ We are making use of python package called MRPackage which has all the functiona
   ```python
   mr(dat, parameters=default_parameters(), method_list=mr_method_list())
   '''
-    Description: The harmonise_data function is used to perform harmonization of genetic effect sizes and alleles for Mendelian Randomization (MR) analysis.
-    It ensures that the effect of a Single Nucleotide Polymorphism (SNP) on both the exposure and outcome variables is measured relative to the same allele.
-    Parameters:
-    -exposure_data (pandas.DataFrame): DataFrame containing the exposure data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
-    -outcome_data (pandas.DataFrame): DataFrame containing the outcome data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
-    Returns:
-    harmonized_data (pandas.DataFrame): Data frame with harmonized genetic effect sizes and alleles, where the effect sizes are relative to the
-    same allele for both exposure and outcome data.
+  Description: The harmonise_data function is used to perform harmonization of genetic effect sizes and alleles for Mendelian Randomization (MR) analysis.
+  It ensures that the effect of a Single Nucleotide Polymorphism (SNP) on both the exposure and outcome variables is measured relative to the same allele.
+  Parameters:
+  -exposure_data (pandas.DataFrame): DataFrame containing the exposure data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
+  -outcome_data (pandas.DataFrame): DataFrame containing the outcome data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
+  Returns:
+  harmonized_data (pandas.DataFrame): Data frame with harmonized genetic effect sizes and alleles, where the effect sizes are relative to the
+  same allele for both exposure and outcome data.
   '''
   ```
 
