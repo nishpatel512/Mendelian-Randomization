@@ -9,6 +9,20 @@ from extract_instruments import *
 from extract_outcome_data import *
 
 def mr_two_sample_ml(b_exp, b_out, se_exp, se_out, parameters):
+'''
+  Description: This function calculates Mendelian Randomization (MR) estimates using the two-sample instrumental
+  variable method with maximum likelihood estimation.   
+  
+  Parameters:
+  - b_exp (array-like): Beta values of the exposure variable.
+  - b_out (array-like): Beta values of the outcome variable.
+  - se_exp (array-like): Standard errors of the exposure variable.
+  - se_out (array-like): Standard errors of the outcome variable.
+  - parameters (dict): Dictionary containing additional parameters for MR analysis.
+  
+  Returns:
+  result (dict): Dictionary containing the MR estimates, standard errors, p-values, and other statistics.
+'''
     valid_indices = np.where(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out))
     if len(valid_indices[0]) < 2:
         return {"b": np.nan, "se": np.nan, "pval": np.nan, "nsnp": np.nan, "Q": np.nan, "Q_df": np.nan, "Q_pval": np.nan}
