@@ -11,6 +11,20 @@ from weighted_median import *
 from weighted_median_bootstrap import *
 
 def mr_weighted_median(b_exp, b_out, se_exp, se_out, parameters):
+'''
+  Description: This function calculates Mendelian Randomization (MR) estimates using the weighted median method.
+  
+  Parameters:
+  - b_exp (array-like): Beta values of the exposure variable.
+  - b_out (array-like): Beta values of the outcome variable.
+  - se_exp (array-like): Standard errors of the exposure variable.
+  - se_out (array-like): Standard errors of the outcome variable.
+  - parameters (dict): Dictionary containing additional parameters for MR analysis.
+
+  Returns:
+  result (dict): Dictionary containing the MR estimates, standard errors, p-values, Q-statistic, degrees of freedom (Q_df),
+                 and p-value of the Q-statistic (Q_pval), as well as the number of SNPs used for the analysis (nsnp).
+'''
     if np.sum(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out)) < 3:
         return {
             "b": np.nan,
