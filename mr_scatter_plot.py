@@ -13,6 +13,17 @@ import warnings
 
 
 def mr_scatter_plot(mr_results, dat):
+'''
+  Description: This function creates scatter plots to compare SNP effects on the exposure variable with SNP effects on the
+  outcome variable for Mendelian Randomization (MR) analysis results.
+  
+  Parameters:
+  - mr_results (pandas.DataFrame): DataFrame containing MR analysis results.
+  - dat (pandas.DataFrame): DataFrame containing harmonized data.
+  
+  Returns:
+  res (list): A list of matplotlib.pyplot objects containing the generated scatter plots.
+'''
     res = []
 
     for group, d in dat.groupby(["id.exposure", "id.outcome"]):
