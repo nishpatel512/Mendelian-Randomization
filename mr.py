@@ -2,13 +2,19 @@ import pandas as pd
 import numpy as np
 from scipy.stats import t,norm,chi2,stats
 from scipy.optimize import minimize
-import scipy.stats
 import statsmodels.api as sm
 from harmonise_data import *
 from extract_instruments import *
 from extract_outcome_data import *
-
+import warnings
 def default_parameters():
+    """
+    Returns a dictionary containing default values for various parameters used in statistical analyses,
+    particularly in the context of Mendelian Randomization (MR) methods.
+
+    Returns:
+    - A dictionary containing the default parameter values for statistical analyses.
+    """
     return {
         "test_dist": "z",
         "nboot": 1000,
@@ -24,6 +30,20 @@ def default_parameters():
 
 
 def mr_method_list():
+    """
+    Generates a DataFrame containing information about various methods used in Mendelian Randomization (MR) analysis.
+
+    Returns:
+    - A pandas DataFrame containing the following information for each MR method:
+        - 'obj': (string) The identifier or object name representing the MR method.
+        - 'name': (string) The human-readable name of the MR method.
+        - 'PubmedID': (string) The PubMed ID associated with the reference publication for the MR method, if available.
+        - 'Description': (string) A brief description of the MR method and its characteristics.
+        - 'use_by_default': (bool) A flag indicating whether the MR method is used by default in the analysis. If True,
+                            the method is used by default; otherwise, it's not included by default.
+        - 'heterogeneity_test': (bool) A flag indicating whether the MR method includes a heterogeneity test. If True,
+                                a heterogeneity test is included; otherwise, it's not part of the method.
+    """
     a = [
         {
             'obj': 'mr_wald_ratio',
@@ -137,6 +157,23 @@ def mr_method_list():
     return df
 
 def mr(dat, parameters=default_parameters(), method_list=mr_method_list()):
+    """
+    Perform Mendelian Randomization (MR) analysis on the provided dataset using specified methods.
+
+    Args:
+    - dat (pandas DataFrame): The input dataset containing harmonised data of exposure and outcome.
+    - parameters (dict, optional): A dictionary containing the default parameters for MR analysis.
+                                    Default parameters are used if not provided.
+    - method_list (pandas DataFrame, optional): A DataFrame containing information about MR methods.
+                                                Default method_list is used if not provided.
+
+    Returns:
+    - mr_tab (pandas DataFrame): A DataFrame containing the results of MR analysis for each exposure-outcome pair.
+                                 The DataFrame includes columns such as 'outcome', 'exposure', 'method', 'nsnp', 'b', 'se', and 'pval'.
+                                 'nsnp' represents the number of SNPs used for analysis, and 'b', 'se', 'pval' are the estimated effect size,
+                                 standard error, and p-value, respectively, for each method.
+
+    """
     global mr_keep
     mr_tab = pd.DataFrame()
     for (id_exposure, id_outcome), x in dat.groupby(["id.exposure", "id.outcome"]):
@@ -169,6 +206,23 @@ def mr(dat, parameters=default_parameters(), method_list=mr_method_list()):
     return mr_tab
 
 def mr_wald_ratio(b_exp, b_out, se_exp, se_out, parameters):
+    """
+    Perform Mendelian Randomization (MR) analysis using the Wald ratio method.
+
+    Args:
+    - b_exp (numpy array): Array of effect sizes (beta) for the exposure variable.
+    - b_out (numpy array): Array of effect sizes (beta) for the outcome variable.
+    - se_exp (numpy array): Array of standard errors for the exposure variable effect sizes.
+    - se_out (numpy array): Array of standard errors for the outcome variable effect sizes.
+    - parameters (dict): A dictionary containing additional parameters for the MR analysis.
+
+    Returns:
+    - Dictionary containing the MR analysis results with keys: 'b', 'se', 'pval', and 'nsnp'.
+      'b': Estimated effect size (beta) from the Wald ratio method.
+      'se': Standard error of the estimated effect size.
+      'pval': P-value for the effect size estimate.
+      'nsnp': Number of SNPs used in the analysis.
+    """
     if len(b_exp) > 1:
         return {'b': np.nan, 'se': np.nan, 'pval': np.nan, 'nsnp': np.nan}
     
@@ -179,11 +233,40 @@ def mr_wald_ratio(b_exp, b_out, se_exp, se_out, parameters):
     return {'b': b, 'se': se, 'pval': pval, 'nsnp': 1}
 
 def mr_two_sample_ml(b_exp, b_out, se_exp, se_out, parameters):
+    """
+    Perform Mendelian Randomization (MR) analysis using the two-sample Maximum Likelihood (ML) method.
+
+    Args:
+    - b_exp (numpy array): Array of effect sizes (beta) for the exposure variable.
+    - b_out (numpy array): Array of effect sizes (beta) for the outcome variable.
+    - se_exp (numpy array): Array of standard errors for the exposure variable effect sizes.
+    - se_out (numpy array): Array of standard errors for the outcome variable effect sizes.
+    - parameters (dict): A dictionary containing additional parameters for the MR analysis.
+
+    Returns:
+    - Dictionary containing the MR analysis results with keys: 'b', 'se', 'pval', 'nsnp', 'Q', 'Q_df', and 'Q_pval'.
+      'b': Estimated causal effect size from the two-sample ML method.
+      'se': Standard error of the estimated causal effect size.
+      'pval': P-value for the causal effect estimate.
+      'nsnp': Number of SNPs used in the analysis.
+      'Q': The test statistic for heterogeneity (Q statistic) in the MR analysis.
+      'Q_df': Degrees of freedom associated with the Q statistic.
+      'Q_pval': P-value for the Q statistic.
+    """
     valid_indices = np.where(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out))
     if len(valid_indices[0]) < 2:
         return {"b": np.nan, "se": np.nan, "pval": np.nan, "nsnp": np.nan, "Q": np.nan, "Q_df": np.nan, "Q_pval": np.nan}
 
     def loglikelihood(param):
+        """
+        Calculate the log-likelihood function for the two-sample Maximum Likelihood (ML) method in Mendelian Randomization (MR) analysis.
+
+        Args:
+        - param (numpy array): Array containing the parameter values to be used in the log-likelihood function.
+
+        Returns:
+        - float: The value of the log-likelihood function.
+        """
         b_exp_valid = b_exp[valid_indices]
         b_out_valid = b_out[valid_indices]
         se_exp_valid = se_exp[valid_indices]
@@ -664,3 +747,4 @@ def mr_sign(b_exp, b_out, se_exp, se_out, parameters):
 
 # res = mr(dat)
 # print (res)
+
