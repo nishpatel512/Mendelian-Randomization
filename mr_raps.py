@@ -9,6 +9,20 @@ from extract_instruments import *
 from extract_outcome_data import *
 
 def mr_raps(b_exp, b_out, se_exp, se_out, parameters):
+'''
+  Description: This function performs Mendelian Randomization (MR) using the robust adjusted profile score (MR-RAPS) method.
+  
+  Parameters:
+  - b_exp (array-like): Beta values of the exposure variable.
+  - b_out (array-like): Beta values of the outcome variable.
+  - se_exp (array-like): Standard errors of the exposure variable.
+  - se_out (array-like): Standard errors of the outcome variable.
+  - parameters (dict): Dictionary containing additional parameters for the MR-RAPS method, including "over_dispersion", "loss_function",
+   and "shrinkage".
+  
+  Returns:
+  result (dict): Dictionary containing the MR estimates, robust standard errors, and p-values for the causal effect.
+  '''
     data = pd.DataFrame({
         "beta.exposure": b_exp,
         "beta.outcome": b_out,
