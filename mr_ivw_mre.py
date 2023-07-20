@@ -9,6 +9,20 @@ from extract_instruments import *
 from extract_outcome_data import *
 
 def mr_ivw_mre(b_exp, b_out, se_exp, se_out, parameters):
+'''
+  Description: This function performs Mendelian Randomization (MR) using the Inverse Variance Weighted (IVW) method
+  with standard errors that account for multi-variant effects.
+  
+  Parameters:
+  - b_exp (array-like): Beta values of the exposure variable.
+  - b_out (array-like): Beta values of the outcome variable.
+  - se_exp (array-like): Standard errors of the exposure variable.
+  - se_out (array-like): Standard errors of the outcome variable.
+  - parameters (dict): Additional parameters (Not used in this method).
+  
+  Returns:
+  result (dict): Dictionary containing the IVW MR estimates, standard errors with multi-variant effects, and p-values for the causal effect.
+'''
     if np.sum(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out)) < 2:
         return {
             "b": np.nan,
