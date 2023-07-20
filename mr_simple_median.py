@@ -10,6 +10,19 @@ from extract_outcome_data import *
 from mr_weighted_median import *
 
 def mr_simple_median(b_exp, b_out, se_exp, se_out, parameters):
+'''
+  Description: This function calculates Mendelian Randomization (MR) estimates using the simple median method.
+  
+  Parameters:
+  - b_exp (array-like): Beta values of the exposure variable.
+  - b_out (array-like): Beta values of the outcome variable.
+  - se_exp (array-like): Standard errors of the exposure variable.
+  - se_out (array-like): Standard errors of the outcome variable.
+  - parameters (dict): Dictionary containing additional parameters, including "nboot" for the number of bootstrap iterations.
+  
+  Returns:
+  result (dict): Dictionary containing the MR estimates, standard errors, and p-values for the causal effect.
+'''
     if np.sum(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out)) < 3:
         return {
             "b": np.nan,
