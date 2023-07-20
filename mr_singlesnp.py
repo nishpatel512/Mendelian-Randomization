@@ -23,6 +23,20 @@ def default_parameters():
     }
 
 def mr_singlesnp(dat, parameters=None, single_method="mr_wald_ratio", all_method=("mr_ivw", "mr_egger_regression")):
+'''
+  Description: This function performs Mendelian Randomization (MR) analysis for each exposure-outcome pair.
+  
+  Parameters:
+  - b_exp (array-like): Beta values of the exposure variable.
+  - b_out (array-like): Beta values of the outcome variable.
+  - se_exp (array-like): Standard errors of the exposure variable.
+  - se_out (array-like): Standard errors of the outcome variable.
+  - parameters (dict): Dictionary containing additional parameters for MR analysis.
+  
+  Returns:
+  result (DataFrame): A pandas DataFrame containing the MR estimates, standard errors, and p-values for each SNP within each
+  exposure-outcome pair.
+'''
     if parameters is None:
         parameters = default_parameters()
 
