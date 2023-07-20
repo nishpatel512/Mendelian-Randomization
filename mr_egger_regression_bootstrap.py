@@ -28,6 +28,19 @@ def linreg(x, y, w=None):
     }
 
 def mr_egger_regression_bootstrap(b_exp, b_out, se_exp, se_out, parameters):
+'''
+  Description: This function performs Mendelian Randomization (MR) using Egger regression with bootstrap for statistical inference.
+  It estimates causal effects of an exposure variable on an outcome variable by harmonizing genetic effect sizes and alleles.
+  Parameters:
+  -b_exp (array-like): Beta values of the exposure variable.
+  -b_out (array-like): Beta values of the outcome variable.
+  -se_exp (array-like): Standard errors of the exposure variable.
+  -se_out (array-like): Standard errors of the outcome variable.
+  -parameters (dict): Dictionary containing additional parameters for the bootstrap process. Should contain the "nboot" parameter
+   indicating the number of bootstrap iterations.
+  Returns:
+  result (dict): Dictionary containing the MR estimates, standard errors, and p-values for the causal effect, as well as for the instrument strength.
+'''
     if np.sum(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out)) < 3:
         return {
             "b": np.nan,
