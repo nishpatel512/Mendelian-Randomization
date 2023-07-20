@@ -7,6 +7,16 @@ from extract_instruments import extract_instruments
 from extract_outcome_data import extract_outcome_data
 from harmonise_data import harmonise_data
 def mr_forest_plot(singlesnp_results, exponentiate=False):
+    '''
+  Description: This function creates forest plots for Mendelian Randomization (MR) analysis results based on the output from the mr_singlesnp function.
+  
+  Parameters:
+  - singlesnp_results (pandas.DataFrame): DataFrame containing MR analysis results from the mr_singlesnp function.
+  - exponentiate (bool, optional): Whether to exponentiate the effect sizes. Defaults to False.
+  
+  Returns:
+  res (list): A list of matplotlib.pyplot objects containing the generated forest plots.
+    '''
     res = []
 
     for group, d in singlesnp_results.groupby(["id.exposure", "id.outcome"]):
