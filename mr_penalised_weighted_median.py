@@ -10,6 +10,19 @@ from extract_outcome_data import *
 from mr_weighted_median import *
 
 def mr_penalised_weighted_median(b_exp, b_out, se_exp, se_out, parameters):
+'''
+  Description: This function performs Mendelian Randomization (MR) using the penalized weighted median method.
+  
+  Parameters:
+  - b_exp (array-like): Beta values of the exposure variable.
+  - b_out (array-like): Beta values of the outcome variable.
+  - se_exp (array-like): Standard errors of the exposure variable.
+  - se_out (array-like): Standard errors of the outcome variable.
+  - parameters (dict): Dictionary containing additional parameters for the penalized weighted median method, including "penk" and "nboot".
+  
+  Returns:
+  result (dict): Dictionary containing the MR estimates, standard errors, and p-values for the causal effect.
+'''
     if np.sum(~np.isnan(b_exp) & ~np.isnan(b_out) & ~np.isnan(se_exp) & ~np.isnan(se_out)) < 3:
         return {
             "b": np.nan,
