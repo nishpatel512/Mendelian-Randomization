@@ -10,10 +10,17 @@ from extract_outcome_data import *
 import statsmodels.api as sm
 #from scipy.optimize import WeightedLeastSquares
 def mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters):
-    '''
-    Input: Beta values of exposure and outcomes\n
-    Output: 
-    '''
+'''
+  Description: The harmonise_data function is used to perform harmonization of genetic effect sizes and alleles for Mendelian Randomization (MR) analysis.
+  It ensures that the effect of a Single Nucleotide Polymorphism (SNP) on both the exposure and outcome variables is measured relative to the same allele.
+  Parameters:
+  -exposure_data (pandas.DataFrame): DataFrame containing the exposure data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
+  -outcome_data (pandas.DataFrame): DataFrame containing the outcome data with columns such as "SNP," "effect_size," "standard_error," "effect_allele," and "other_allele."
+  Returns:
+  harmonized_data (pandas.DataFrame): Data frame with harmonized genetic effect sizes and alleles, where the effect sizes are relative to the same
+  allele for both exposure and outcome 
+  data.
+'''
     if len(b_exp) != len(b_out) or len(se_exp) != len(se_out) or len(b_exp) != len(se_out):
         return {
             "b": np.nan,
