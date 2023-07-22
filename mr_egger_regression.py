@@ -7,7 +7,8 @@ import statsmodels.api as sm
 from harmonise_data import *
 from extract_instruments import *
 from extract_outcome_data import *
-
+import statsmodels.api as sm
+#from scipy.optimize import WeightedLeastSquares
 def mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters):
     '''
     Input: Beta values of exposure and outcomes\n
@@ -65,24 +66,37 @@ def mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters):
     }
 
     X = sm.add_constant(b_exp)
+    global weights
     weights = 1 / se_out ** 2
+    mod = sm.WLS(b_out, X, weights=weights)
+    results = mod.fit()
+    # weights = 1 / se_out**2
+    # X = np.column_stack((np.ones_like(b_exp), b_exp))
+    # Y = b_out
+    # W = np.diag(weights)
 
-    model = sm.WLS(b_out, X, weights=weights)
-    results = model.fit()
+    # model = WeightedLeastSquares(X, Y, weights=W)
+    # results = model.fit()
+    #beta = results.params
+    # se = np.sqrt(results.cov[1, 1])
+
 
     b = results.params[1]
     se = results.bse[1]
-    pval = 2 * stats.t.sf(abs(b / se), len(b_exp) - 2)
+    pval = 2 * stats.t.sf(abs(b / se), df=len(b_exp) - 2)
 
     b_i = results.params[0]
     se_i = results.bse[0]
-    pval_i = 2 * stats.t.sf(abs(b_i / se_i), len(b_exp) - 2)
+    pval_i = 2 * stats.t.sf(abs(b_i / se_i),df=len(b_exp) - 2)
 
     Q = results.scale * (len(b_exp) - 2)
     Q_df = len(b_exp) - 2
     Q_pval = stats.chi2.sf(Q, Q_df)
 
     return {
+        # "b": results.params[1],
+        # "se": results.bse[1],
+        # "pval": results.pvalues[1],
         "b": b,
         "se": se,
         "pval": pval,
