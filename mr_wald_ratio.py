@@ -9,7 +9,7 @@ from extract_instruments import *
 from extract_outcome_data import *
 
 def mr_wald_ratio(b_exp, b_out, se_exp, se_out, parameters):
-'''
+  '''
   Description: This function calculates Mendelian Randomization (MR) estimates using the Wald ratio method.
   
   Parameters:
@@ -21,14 +21,14 @@ def mr_wald_ratio(b_exp, b_out, se_exp, se_out, parameters):
 
   Returns:
   result (dict): Dictionary containing the MR estimates, standard errors, p-values, and the number of SNPs used for the analysis.
-'''
-    if not np.isscalar(b_exp) and np.size(b_exp) > 1:
-        return {'b': np.nan, 'se': np.nan, 'pval': np.nan, 'nsnp': np.nan}
+  '''
+  if not np.isscalar(b_exp) and np.size(b_exp) > 1:
+      return {'b': np.nan, 'se': np.nan, 'pval': np.nan, 'nsnp': np.nan}
 
-    b = b_out / b_exp
-    se = se_out / np.abs(b_exp)
-    pval = norm.sf(np.abs(b) / se) * 2
+  b = b_out / b_exp
+  se = se_out / np.abs(b_exp)
+  pval = norm.sf(np.abs(b) / se) * 2
 
-    return {'b': b, 'se': se, 'pval': pval, 'nsnp': 1}
+  return {'b': b, 'se': se, 'pval': pval, 'nsnp': 1}
 
 
