@@ -113,6 +113,31 @@ We are making use of python package called MRPackage which has all the functiona
   ```
 
   ```python
+  mr_heterogenity(dat, parameters=None, method_list=None)
+    '''
+    Function to perform heterogeneity analysis on a given dataframe.
+    Parameters:
+    - dat: The input dataframe.
+    - parameters: Optional parameter values. If not provided, default parameters will be used.
+    - method_list: Optional list of methods. If not provided, a default method list will be used.
+    Returns:
+    - het_tab: A dataframe containing the results of the heterogeneity analysis.
+    '''
+  ```
+
+  ```python
+  mr_pleiotropy_test(dat)
+    '''
+    Function performs a pleiotropy analysis on groups within a DataFrame.
+    It takes a DataFrame `dat` as input.
+    Parameters:
+    - dat: The input DataFrame containing the data for analysis.
+    Returns:
+    - ptab: The results of the pleiotropy analysis as a DataFrame.
+    '''
+  ```
+
+  ```python
   mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters)
   '''
     Description: The harmonise_data function is used to perform harmonization of genetic effect sizes and alleles for Mendelian Randomization (MR) analysis.
