@@ -2,7 +2,7 @@ import pandas as pd
 from format_data import *
 def read_outcome_data(filename, snps=None, sep=" ", phenotype_col="Phenotype", snp_col="SNP", beta_col="beta", se_col="se", eaf_col="eaf", effect_allele_col="effect_allele", other_allele_col="other_allele", pval_col="pval", units_col="units", ncase_col="ncase", ncontrol_col="ncontrol", samplesize_col="samplesize", gene_col="gene", id_col="id", min_pval=1e-200, log_pval=False, chr_col="chr", pos_col="pos"):
     outcome_dat = pd.read_csv(filename, sep=sep)
-'''
+    '''
   Description: This function reads outcome data from a text file and formats it for Mendelian Randomization (MR) analysis.
 
   Parameters:
@@ -30,7 +30,7 @@ def read_outcome_data(filename, snps=None, sep=" ", phenotype_col="Phenotype", s
 
   Returns:
   outcome_dat (pd.DataFrame): A formatted DataFrame containing the outcome data for MR analysis.
-'''
+    '''
     outcome_dat = format_data(
         outcome_dat,
         type="outcome",
