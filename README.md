@@ -138,6 +138,22 @@ We are making use of python package called MRPackage which has all the functiona
   ```
 
   ```python
+  mr_density_plot(singlesnp_results, mr_results, exponentiate=False, bandwidth="nrd0")
+    """
+    Create density plots for MR estimates using a histogram and per SNP MR estimates.
+
+    Parameters:
+    - singlesnp_results (pandas DataFrame): Dataframe containing the per-SNP MR results.
+    - mr_results (pandas DataFrame): Dataframe containing the MR results for different methods.
+    - exponentiate (bool, optional): Whether to exponentiate the MR estimates or not. Default is False.
+    - bandwidth (str, optional): Bandwidth method for kernel density estimation. Default is "nrd0".
+
+    Returns:
+    - res (list): A list of matplotlib.pyplot objects containing the generated density plots.
+    """
+  ```
+
+  ```python
   mr_egger_regression(b_exp, b_out, se_exp, se_out, parameters)
   '''
     Description: The harmonise_data function is used to perform harmonization of genetic effect sizes and alleles for Mendelian Randomization (MR) analysis.
